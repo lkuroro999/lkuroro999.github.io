@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  font-family: Arial, sans-serif;
+}
+.container {
+  max-width: 800px;
+  margin: auto;
+}
+.question {
+  margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Juego de Preguntas y Respuestas</h1>
+  
+  <div id="quiz" class="question"></div>
+  <input id="answer" type="text">
+  <button id="submit">Enviar Respuesta</button>
+  <div id="score"></div>
+  
+</div>
+
+<script>
+var questions = [
+  '¿Cuál grupo incluye a los peces cartilaginosos?',
+  '¿Cuál grupo está compuesto por los peces óseos?',
+  '¿Cuál grupo incluye a los anfibios, como las ranas y salamandras?',
+  '¿Cuál grupo incluye a los reptiles, como las serpientes y las tortugas?',
+  '¿Cuál grupo incluye a las aves?'
+];
+var answers = [
+  'Chondrichthyes',
+  'Osteichthyes',
+  'Amphibia',
+  'Reptilia',
+  'Aves'
+];
+var currentQuestion = 0;
+var score = 0;
+
+document.getElementById('quiz').textContent = questions[currentQuestion];
+document.getElementById('score').textContent = 'Puntuación: ' + score;
+
+document.getElementById('submit').addEventListener('click', function() {
+  
+  var userAnswer = document.getElementById('answer').value;
+  
+  if (userAnswer.toLowerCase() === answers[currentQuestion].toLowerCase()) {
+    score++;
+    alert('¡Correcto!');
+  } else {
+    alert('Lo siento, la respuesta correcta era ' + answers[currentQuestion]);
+  }
+  
+  currentQuestion++;
+  
+  if (currentQuestion < questions.length) {
+    document.getElementById('quiz').textContent = questions[currentQuestion];
+    document.getElementById('answer').value = '';
+    document.getElementById('score').textContent = 'Puntuación: ' + score;
+    
+    if (currentQuestion === questions.length -1) {
+      document.getElementById('submit').textContent = 'Finalizar';
+    }
+    
+  } else {
+    document.getElementById('quiz').textContent = '¡Has terminado el juego! Tu puntuación final es: ' + score;
+    document.getElementById('submit').style.display = 'none';
+    document.getElementById('answer').style.display = 'none';
+    document.getElementById('score').style.display = 'none';
+    
+    if (score === questions.length) {
+      alert('¡Felicidades! Has respondido correctamente a todas las preguntas.');
+    } else if (score === questions.length -1) {
+      alert('¡Buen trabajo! Solo te has equivocado en una pregunta.');
+    } else {
+      alert('¡Buen intento! Sigue practicando para mejorar tu puntuación.');
+    }
+    
+  }
+});
+</script>
+
+</body>
+</html>
