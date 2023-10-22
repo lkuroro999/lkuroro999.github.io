@@ -1,99 +1,267 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<style>
-body {
-  font-family: Arial, sans-serif;
-}
-.container {
-  max-width: 800px;
-  margin: auto;
-}
-.question {
-  margin-bottom: 10px;
-}
-</style>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            /* Color de fondo gris claro */
+            font-family: Arial, sans-serif;
+        }
+        
+        #game,
+        #menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        
+        .button {
+            background-color: #ff7f7f;
+            /* Color de fondo rojo claro */
+            color: white;
+            /* Color de texto blanco */
+            border: none;
+            padding: 2vw;
+            /* El tamaño del padding es el 2% del ancho de la ventana */
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 4vw;
+            /* El tamaño de la fuente es el 4% del ancho de la ventana */
+            margin: 1vw;
+            /* El tamaño del margen es el 1% del ancho de la ventana */
+            cursor: pointer;
+            width: auto;
+            /* El ancho del botón se ajusta al contenido */
+            min-width: 80vw;
+            /* El ancho mínimo del botón es el 80% del ancho de la ventana */
+            max-width: 3000px;
+            /* El ancho máximo del botón es 300px */
+        }
+        
+        #question {
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        
+        #timer {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+    </style>
 </head>
+
 <body>
+    <h2 id="timer"></h2>
+    <div id="menu">
+        <button class="button" id="playButton">Jugar</button>
+        <button class="button" id="helpButton">Ayuda</button>
+    </div>
 
-<div class="container">
-  <h1>Juego de Preguntas y Respuestas</h1>
-  
-  <div id="quiz" class="question"></div>
-  <div id="options"></div>
-  <button id="next">Siguiente Pregunta</button>
-  <div id="score"></div>
-  
-</div>
+    <div id="game" style="display: none;">
+        <div id="timer"></div>
+        <div id="score"></div>
+        <div id="question"></div>
+        <button class="button" onclick="checkAnswer(0)"></button>
+        <button class="button" onclick="checkAnswer(1)"></button>
+        <button class="button" onclick="retryGame()" id="retryButton" style="display: none;">Reintentar</button>
+    </div>
 
-<script>
-var questions = [
-  '¿Cuál grupo incluye a los peces cartilaginosos?',
-  '¿Cuál grupo está compuesto por los peces óseos?',
-  '¿Cuál grupo incluye a los anfibios, como las ranas y salamandras?',
-  '¿Cuál grupo incluye a los reptiles, como las serpientes y las tortugas?',
-  '¿Cuál grupo incluye a las aves?'
-];
-var answers = [
-  'Chondrichthyes',
-  'Osteichthyes',
-  'Amphibia',
-  'Reptilia',
-  'Aves'
-];
-var currentQuestion = 0;
-var score = 0;
+    <script>
+        var questions = [{
+            question: "¿Qué es un microorganismo?",
+            answers: ["Un organismo que solo puede verse con un microscopio.", "Un organismo que puede verse a simple vista."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es una bacteria?",
+            answers: ["Un organismo unicelular que puede causar enfermedades.", "Un organismo multicelular que puede causar enfermedades."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es un virus?",
+            answers: ["Un organismo unicelular que puede causar enfermedades.", "Una entidad infecciosa que solo puede replicarse dentro de las células de otros organismos."],
+            correctAnswer: 1
+        }, {
+            question: "¿Qué es un hongo?",
+            answers: ["Un tipo de planta.", "Un tipo de organismo que incluye levaduras y mohos."],
+            correctAnswer: 1
+        }, {
+            question: "¿Qué es la levadura?",
+            answers: ["Un tipo de bacteria.", "Un tipo de hongo."],
+            correctAnswer: 1
+        }, {
+            question: "¿Qué es el moho?",
+            answers: ["Un tipo de bacteria.", "Un tipo de hongo."],
+            correctAnswer: 1
+        }, {
+            question: "¿Qué es un protozoo?",
+            answers: ["Un organismo unicelular eucariota.", "Un organismo multicelular eucariota."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es una ameba?",
+            answers: ["Un tipo de bacteria.", "Un tipo de protozoo."],
+            correctAnswer: 1
+        }, {
+            question: "¿Qué es la penicilina?",
+            answers: ["Un antibiótico producido por un tipo de bacteria.", "Un antibiótico producido por un tipo de hongo."],
+            correctAnswer: 1
+        }, {
+            question: "¿Qué es la fermentación?",
+            answers: ["Un proceso químico que utiliza oxígeno para descomponer moléculas orgánicas.", "Un proceso químico que no utiliza oxígeno para descomponer moléculas orgánicas."],
+            correctAnswer: 1
+        }, {
+            question: "¿Qué es la fotosíntesis?",
+            answers: ["Un proceso químico que utiliza luz para producir moléculas orgánicas.", "Un proceso químico que utiliza calor para producir moléculas orgánicas."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué son los estromatolitos?",
+            answers: ["Estructuras rocosas formadas por la actividad de las cianobacterias.", "Estructuras rocosas formadas por la actividad de las levaduras."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué son las cianobacterias?",
+            answers: ["Bacterias que pueden realizar la fotosíntesis.", "Bacterias que pueden realizar la fermentación."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué son los plásmidos?",
+            answers: ["Pequeñas moléculas de ADN en las bacterias que pueden replicarse independientemente del cromosoma bacteriano.", "Grandes moléculas de ADN en las bacterias que no pueden replicarse independientemente del cromosoma bacteriano."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué son los flagelos?",
+            answers: ["Estructuras utilizadas por algunos microorganismos para moverse.", "Estructuras utilizadas por algunos microorganismos para alimentarse."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué son los pili?",
+            answers: ["Estructuras utilizadas por algunas bacterias para moverse.", "Estructuras utilizadas por algunas bacterias para transferir ADN."],
+            correctAnswer: 1
+        }, {
+            question: "¿Qué son los endosporas?",
+            answers: ["Estructuras formadas por algunas bacterias en respuesta al estrés ambiental.", "Estructuras formadas por algunas bacterias en respuesta al exceso de nutrientes."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es la conjugación bacteriana?",
+            answers: ["El proceso mediante el cual las bacterias se dividen en dos células hijas idénticas.", "El proceso mediante el cual una bacteria transfiere ADN a otra bacteria."],
+            correctAnswer: 1
+        }, {
+            question: "¿Qué es la fisión binaria?",
+            answers: ["El proceso mediante el cual las bacterias se dividen en dos células hijas idénticas.", "El proceso mediante el cual una bacteria transfiere ADN a otra bacteria."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es la transformación bacteriana?",
+            answers: ["El proceso mediante el cual una bacteria adquiere ADN del medio ambiente.", "El proceso mediante el cual una bacteria adquiere nutrientes del medio ambiente."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es la transducción bacteriana?",
+            answers: ["El proceso mediante el cual una bacteria adquiere ADN de otra bacteria a través de un virus.", "El proceso mediante el cual una bacteria adquiere nutrientes de otra bacteria a través de un virus."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es la resistencia a los antibióticos?",
+            answers: ["La capacidad de una bacteria para sobrevivir en presencia de un antibiótico que normalmente la mataría o inhibiría su crecimiento.", "La capacidad de una bacteria para sobrevivir en ausencia de un antibiótico que normalmente la mataría o inhibiría su crecimiento."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es la microbiota?",
+            answers: ["El conjunto de microorganismos que habitan en un ambiente particular.", "El conjunto de microorganismos que causan enfermedades."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es el microbioma?",
+            answers: ["El conjunto de microorganismos que habitan en un ambiente particular, junto con sus genes.", "El conjunto de microorganismos que causan enfermedades, junto con sus genes."],
+            correctAnswer: 0
+        }, {
+            question: "¿Qué es la biotecnología?",
+            answers: ["La tecnología que utiliza organismos vivos o partes de ellos para fabricar o modificar productos, mejorar plantas o animales, o desarrollar microorganismos para usos específicos.", "La tecnología que utiliza organismos vivos o partes de ellos para fabricar o modificar productos, mejorar plantas o animales, o desarrollar microorganismos para usos destructivos."],
+            correctAnswer: 0
+        }];
 
-document.getElementById('quiz').textContent = questions[currentQuestion];
-document.getElementById('score').textContent = 'Puntuación: ' + score;
+        var currentQuestionIndex = 0;
+        var score = 0;
+        var timer = 30;
+        var timerId;
+        var correctSound = new Audio('correct.mp3'); // Cambia 'correct.mp3' por la ruta a tu archivo de audio para respuestas correctas
+        var incorrectSound = new Audio('incorrect.mp3'); // Cambia 'incorrect.mp3' por la ruta a tu archivo de audio para respuestas incorrectas
 
-document.getElementById('next').addEventListener('click', function() {
-  
-  var options = document.getElementsByName('option');
-  
-  for (var i = 0; i < options.length; i++) {
-    if (options[i].checked) {
-      var userAnswer = options[i].value;
-    }
-    options[i].checked = false;
-  }
-  
-  if (userAnswer === answers[currentQuestion]) {
-    score++;
-    alert('¡Correcto!');
-  } else {
-    alert('Lo siento, la respuesta correcta era ' + answers[currentQuestion]);
-  }
-  
-  currentQuestion++;
-  
-  if (currentQuestion < questions.length) {
-    document.getElementById('quiz').textContent = questions[currentQuestion];
-    document.getElementById('score').textContent = 'Puntuación: ' + score;
-    
-    if (currentQuestion === questions.length -1) {
-      document.getElementById('next').textContent = 'Finalizar';
-    }
-    
-  } else {
-    document.getElementById('quiz').textContent = '¡Has terminado el juego! Tu puntuación final es: ' + score;
-    document.getElementById('next').style.display = 'none';
-    document.getElementById('score').style.display = 'none';
-    
-    if (score === questions.length) {
-      alert('¡Felicidades! Has respondido correctamente a todas las preguntas.');
-    } else if (score === questions.length -1) {
-      alert('¡Buen trabajo! Solo te has equivocado en una pregunta.');
-    } else {
-      alert('¡Buen intento! Sigue practicando para mejorar tu puntuación.');
-    }
-    
-  }
-});
-</script>
 
+        document.getElementById("playButton").addEventListener("click", function() {
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("game").style.display = "flex";
+            startGame();
+        });
+
+        document.getElementById("helpButton").addEventListener("click", function() {
+            window.location.href = "#"; // Cambia esto por la URL de tu página de ayuda
+        });
+
+
+
+        function startGame() {
+            updateQuestion();
+            timerId = setInterval(updateTimer, 1000); // Guarda el ID del temporizador
+        }
+
+        function updateQuestion() {
+            var question = questions[currentQuestionIndex];
+            document.getElementById("question").innerText = question.question;
+            document.getElementsByTagName("button")[2].innerText = question.answers[0];
+            document.getElementsByTagName("button")[3].innerText = question.answers[1];
+        }
+
+        function updateTimer() {
+            timer--;
+            document.getElementById("timer").innerText = "Tiempo restante: " + timer + " segundos";
+            if (timer <= 0) {
+                nextQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+            timer = 30;
+            updateQuestion();
+        }
+
+        function checkAnswer(index) {
+            if (index === questions[currentQuestionIndex].correctAnswer) {
+                correctSound.play(); // Reproduce el sonido de respuesta correcta
+                score++;
+                document.getElementById("score").innerText = "Puntuación: " + score;
+                nextQuestion();
+            } else {
+                incorrectSound.play(); // Reproduce el sonido de respuesta incorrecta
+                nextQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+            timer = 30;
+            updateQuestion();
+        }
+
+        function endGame() {
+            // ...
+            document.getElementById("retryButton").style.display = "block"; // Muestra el botón de reintentar
+        }
+
+        function retryGame() {
+            document.getElementById("retryButton").style.display = "none"; // Oculta el botón de reintentar
+            currentQuestionIndex = 0; // Reinicia el índice de la pregunta actual
+            score = 0; // Reinicia la puntuación
+            timer = 30; // Reinicia el temporizador
+            startGame(); // Comienza el juego de nuevo
+        }
+    </script>
 </body>
-</html>
 
+</html>
 </body>
 </html>
